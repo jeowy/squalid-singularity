@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowLeft, Loader2 } from "lucide-react";
 import { MobileCarousel } from "./MobileCarousel"; 
 
 interface AstroInputImage {
@@ -17,7 +17,9 @@ interface DigitizeGalleryProps {
 
 export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGalleryProps) {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  
+  // Loading state for the large focused image
+  const [isFocusedImageLoaded, setIsFocusedImageLoaded] = useState(false);
 
   // Filter out just the grid images for the zoomed view
   const focusableImages = gridImages.map((img, i) => ({
@@ -30,14 +32,14 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (focusedIndex === null) return;
-    setIsImageLoaded(false);
+    setIsFocusedImageLoaded(false); 
     setFocusedIndex((prev) => (prev === focusableImages.length - 1 ? 0 : (prev || 0) + 1));
   };
 
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (focusedIndex === null) return;
-    setIsImageLoaded(false);
+    setIsFocusedImageLoaded(false);
     setFocusedIndex((prev) => (prev === 0 ? focusableImages.length - 1 : (prev || 0) - 1));
   };
 
@@ -56,24 +58,25 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
           {focusedIndex !== null && (
             <>
               <motion.button
-                initial={{ opacity: 0, x: 10 }}
+                initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
+                exit={{ opacity: 0, x: -10 }}
                 onClick={prevImage}
-                // LOGIC: Inside by default, Outside on XL screens
-                className="absolute top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/90 shadow-md text-primary hover:bg-primary hover:text-white transition-all z-50 
-                           left-4 xl:-left-16"
+                // RESTORED: Outside on XL screens (-left-20), Inside on smaller (left-4)
+                className="absolute top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md border border-gray-100 text-primary hover:scale-105 transition-all z-50 
+                           left-4 xl:-left-20"
               >
                 <ChevronLeft size={32} />
               </motion.button>
 
               <motion.button
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
+                exit={{ opacity: 0, x: 10 }}
                 onClick={nextImage}
-                className="absolute top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/90 shadow-md text-primary hover:bg-primary hover:text-white transition-all z-50 
-                           right-4 xl:-right-16"
+                // RESTORED: Outside on XL screens (-right-20), Inside on smaller (right-4)
+                className="absolute top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md border border-gray-100 text-primary hover:scale-105 transition-all z-50 
+                           right-4 xl:-right-20"
               >
                 <ChevronRight size={32} />
               </motion.button>
@@ -96,14 +99,19 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
                 transition={{ duration: 0.3 }}
                 className="w-full relative min-h-[400px]"
               >
-                {/* FIX: The 'opacity-0' class ensures it is hidden by CSS immediately.
-                  The 'transition-opacity' handles the fade in once loaded.
-                */}
+                {/* Loader State */}
+                {!isFocusedImageLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-50 z-10">
+                    <Loader2 className="animate-spin text-primary w-8 h-8" />
+                  </div>
+                )}
+
                 <motion.img
                   key={focusedIndex}
                   src={focusableImages[focusedIndex].src}
-                  className={`w-full h-auto block transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  onLoad={() => setIsImageLoaded(true)}
+                  // Opacity fade prevents FOUC
+                  className={`w-full h-auto block transition-opacity duration-300 ${isFocusedImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  onLoad={() => setIsFocusedImageLoaded(true)}
                 />
 
                 <button 
@@ -125,9 +133,18 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
                 transition={{ duration: 0.3 }}
                 className="w-full flex flex-col"
               >
+                {/* RESTORED: Using FadeInImage wrapper. 
+                   This forces every slice to wait for its own 'load' event before showing up.
+                   This eliminates the "white flash" when going Back.
+                */}
+                
                 {/* Header Slice */}
                 <div className="w-full relative">
-                  <img src={headerImage.src} className="w-full h-auto block" alt="Dashboard Header" />
+                  <FadeInImage 
+                    src={headerImage.src} 
+                    alt="Dashboard Header" 
+                    className="w-full h-auto block"
+                  />
                 </div>
 
                 {/* Grid Slices */}
@@ -137,19 +154,20 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
                       key={i} 
                       className="relative group cursor-pointer overflow-hidden"
                       onClick={() => {
-                        setIsImageLoaded(false);
+                        setIsFocusedImageLoaded(false);
                         setFocusedIndex(i);
                       }} 
                     >
-                      <img 
-                          src={img.src} 
-                          className="w-full h-auto block transition-all duration-300 group-hover:brightness-110" 
-                          alt={`Slice ${i}`}
+                      <FadeInImage 
+                        src={img.src} 
+                        alt={`Slice ${i}`}
+                        className="w-full h-auto block transition-transform duration-300 group-hover:brightness-110"
                       />
                       <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/50 transition-colors pointer-events-none" />
                     </div>
                   ))}
                 </div>
+
               </motion.div>
             )}
           </AnimatePresence>
@@ -157,5 +175,29 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
         </div>
       </div>
     </>
+  );
+}
+
+// RESTORED: This component handles the "Opacity 0 -> Load -> Opacity 1" logic per image.
+// Crucial for preventing flash on cached images.
+function FadeInImage({ src, alt, className }: { src: string, alt: string, className?: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
+      setLoaded(true);
+    }
+  }, []);
+  
+  return (
+    <img 
+      ref={imgRef}
+      src={src} 
+      alt={alt} 
+      loading="eager"
+      onLoad={() => setLoaded(true)}
+      className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+    />
   );
 }
