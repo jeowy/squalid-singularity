@@ -1,0 +1,219 @@
+---
+import { Mail, Phone, Linkedin, Twitter } from "lucide-react";
+
+const MAIN_SITE = "https://www.datadocks.com";
+
+// 1. THE "SLIDING UNDERLINE" ANIMATION CLASS
+// - text-gray-100: Whiter text
+// - hover:text-[#FF5722]: Turns orange
+// - after:... : Creates the line that slides in from the left
+const hoverLinkClass = `
+  relative inline-block text-base text-gray-100 transition-colors duration-300
+  hover:text-[#FF5722]
+  after:content-[''] 
+  after:absolute 
+  after:w-full 
+  after:scale-x-0 
+  after:h-[1px] 
+  after:bottom-0 
+  after:left-0 
+  after:bg-[#FF5722] 
+  after:origin-bottom-right 
+  after:transition-transform 
+  after:duration-300 
+  hover:after:scale-x-100 
+  hover:after:origin-bottom-left
+`;
+
+const columns = {
+  contact: {
+    title: "Contact Us",
+    address: [
+      "405 Queen Street S",
+      "#75078",
+      "Bolton, ON",
+      "L7E 1H6"
+    ],
+    email: "info@datadocks.com",
+    phone: "(647) 848-8250"
+  },
+  howItHelps: {
+    title: "How DataDocks Helps",
+    links: [
+      { label: "Increase Capacity", href: `${MAIN_SITE}/benefits/increase-capacity` },
+      { label: "See Everything", href: `${MAIN_SITE}/benefits/see-everything` },
+      { label: "Delight Carriers", href: `${MAIN_SITE}/benefits/delight-carriers` },
+      { label: "Digitize Operations", href: `${MAIN_SITE}/benefits/digitize-operations` },
+    ]
+  },
+  features1: {
+    title: "Features",
+    links: [
+      { label: "Documentation", href: `${MAIN_SITE}/features/documentation` },
+      { label: "Capacity Limits", href: `${MAIN_SITE}/features/capacity-limits` },
+      { label: "Custom Rules", href: `${MAIN_SITE}/features/custom-rules` },
+      { label: "Data Validation", href: `${MAIN_SITE}/features/data-validation` },
+      { label: "Carrier Portal", href: `${MAIN_SITE}/features/carrier-portal` },
+      { label: "Yard Management", href: `${MAIN_SITE}/features/yard-management` },
+    ]
+  },
+  features2: {
+    title: "", 
+    links: [
+      { label: "Dock Dashboard", href: `${MAIN_SITE}/features/dock-dashboard` },
+      { label: "Efficiency Reports", href: `${MAIN_SITE}/features/efficiency-reports` },
+      { label: "Notifications", href: `${MAIN_SITE}/features/notifications` },
+      { label: "Access Anywhere", href: `${MAIN_SITE}/features/access-anywhere` },
+      { label: "Live Editing", href: `${MAIN_SITE}/features/live-editing` },
+      { label: "Integration", href: `${MAIN_SITE}/features/integration` },
+    ]
+  },
+  quickLinks: {
+    title: "Quick Links",
+    links: [
+      { label: "Login", href: "https://app.datadocks.com" },
+      { label: "Support", href: `${MAIN_SITE}/support` },
+      { label: "FAQs", href: `${MAIN_SITE}/faqs` },
+      { label: "DataDocks Vs. OpenDock", href: `${MAIN_SITE}/datadocks-vs-opendock` },
+      { label: "Privacy Policy", href: `${MAIN_SITE}/privacy-policy` },
+    ]
+  }
+};
+---
+
+<footer class="bg-black text-white py-12 border-t border-white/10 font-sans">
+  <div class="container mx-auto px-6 max-w-6xl">
+    
+    {/* TOP SECTION: LINKS */}
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-4 mb-16">
+      
+      {/* 1. CONTACT */}
+      <div class="col-span-1">
+        {/* Larger Headers (text-xl) */}
+        <h3 class="font-recoleta font-bold text-xl mb-4 text-white">Contact Us</h3>
+        
+        {/* Tighter Spacing (space-y-0) and Whiter Text */}
+        <div class="text-base text-gray-100 space-y-0 leading-snug mb-4">
+          {columns.contact.address.map(line => <p>{line}</p>)}
+        </div>
+        <div class="space-y-1">
+          <a href={`mailto:${columns.contact.email}`} class={hoverLinkClass}>
+            {columns.contact.email}
+          </a>
+          <br/>
+          <a href={`tel:${columns.contact.phone.replace(/\D/g,'')}`} class={hoverLinkClass}>
+            {columns.contact.phone}
+          </a>
+        </div>
+      </div>
+
+      {/* 2. HOW IT HELPS */}
+      <div class="col-span-1">
+        <h3 class="font-recoleta font-bold text-xl mb-4 text-white">{columns.howItHelps.title}</h3>
+        <ul class="space-y-2">
+          {columns.howItHelps.links.map(link => (
+            <li>
+              <a href={link.href} class={hoverLinkClass}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* 3. FEATURES (Left) */}
+      <div class="col-span-1">
+        <h3 class="font-recoleta font-bold text-xl mb-4 text-white">{columns.features1.title}</h3>
+        <ul class="space-y-2">
+          {columns.features1.links.map(link => (
+            <li>
+              <a href={link.href} class={hoverLinkClass}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* 4. FEATURES (Right - Pushed down to align with list) */}
+      <div class="col-span-1 pt-0 lg:pt-[2.75rem]">
+        <ul class="space-y-2">
+          {columns.features2.links.map(link => (
+            <li>
+              <a href={link.href} class={hoverLinkClass}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* 5. QUICK LINKS */}
+      <div class="col-span-1">
+        <h3 class="font-recoleta font-bold text-xl mb-4 text-white">{columns.quickLinks.title}</h3>
+        <ul class="space-y-2">
+          {columns.quickLinks.links.map(link => (
+            <li>
+              <a href={link.href} class={hoverLinkClass}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+    </div>
+
+    {/* BOTTOM SECTION: LOGOS & COPYRIGHT */}
+    <div class="flex flex-col lg:flex-row justify-between items-end lg:items-center gap-8 border-t border-white/10 pt-10">
+      
+      {/* Left: Datadocks Logo Icon & SOC2 */}
+      <div class="flex items-center gap-8">
+        {/* Larger Logos as requested */}
+        <img 
+          src="https://cdn.prod.website-files.com/63d256598b9a13621548953f/63d7af350a07cb3b3c79fbc8_Orange%20Logo.svg" 
+          alt="DataDocks Logo" 
+          class="w-14 h-14"
+        />
+
+        <img 
+          src="https://cdn.prod.website-files.com/63d256598b9a13621548953f/68dab1e8ae9ca364bfad2f88_21972-312_SOC_NonCPA.png" 
+          alt="AICPA SOC2 Certified" 
+          class="h-20 w-auto" 
+        />
+      </div>
+
+      {/* Center: Government Funding */}
+      <div class="flex items-center gap-4 opacity-90 hover:opacity-100 transition-opacity">
+        <div class="text-[10px] leading-tight text-right text-gray-300 hidden md:block">
+          Funded by the Federal Economic Development<br/>Agency for Southern Ontario
+        </div>
+        <div class="h-8 w-px bg-white/30 hidden md:block"></div>
+        <img 
+          src="https://cdn.prod.website-files.com/63d256598b9a13621548953f/68a32b9c786c9e8f5dc00ad0_26c8fadd7f470d46cdb99000ad17ca50_canada.png" 
+          alt="Government of Canada" 
+          class="h-8 w-auto"
+        />
+      </div>
+
+      {/* Right: Copyright */}
+      <div class="flex flex-col items-end gap-2">
+        <div class="flex items-center gap-4">
+          <a href="https://linkedin.com/company/datadocks" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#0077b5] transition-colors">
+            <Linkedin className="w-5 h-5" />
+            <span class="sr-only">LinkedIn</span>
+          </a>
+          <a href="https://twitter.com/datadocks" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#1DA1F2] transition-colors">
+            <Twitter className="w-5 h-5" />
+            <span class="sr-only">Twitter</span>
+          </a>
+        </div>
+        <p class="text-sm text-gray-100">
+          © Northfire {new Date().getFullYear()}
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</footer>

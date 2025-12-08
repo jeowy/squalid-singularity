@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font Face Declarations */
+/* 1. Bruta Extra Bold */
+@font-face {
+  font-family: 'Bruta';
+  src: url('/fonts/Bruta-ExtraBold.otf') format('opentype');
+  font-weight: 800; /* Extra Bold */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 1. Recoleta Regular (Weight 400) - For Navigation */
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/Recoleta-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 2. Recoleta Medium (Weight 500) - For FAQs */
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/Recoleta-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 3. Recoleta SemiBold (Weight 600) - For Testimonials/Integrations */
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/Recoleta-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Brand Colors */
+    --background: 35 100% 97%; /* #FFF8EE */
+    --foreground: 0 0% 0%; /* #000000 */
+
+    --card: 35 100% 97%; /* #FFF8EE */
+    --card-foreground: 0 0% 0%; /* #000000 */
+
+    --popover: 35 100% 97%; /* #FFF8EE */
+    --popover-foreground: 0 0% 0%; /* #000000 */
+
+    --primary: 19 100% 50%; /* #FE5000 */
+    --primary-foreground: 35 100% 97%; /* #FFF8EE */
+    --primary-glow: 19 100% 60%;
+
+    --secondary: 33 48% 88%; /* #EFE2D2 */
+    --secondary-foreground: 0 0% 0%; /* #000000 */
+
+    --muted: 33 48% 88%; /* #EFE2D2 */
+    --muted-foreground: 0 0% 30%;
+
+    --accent: 19 100% 50%; /* #FE5000 */
+    --accent-foreground: 35 100% 97%; /* #FFF8EE */
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 33 48% 88%; /* #EFE2D2 */
+    --input: 33 48% 88%; /* #EFE2D2 */
+    --ring: 19 100% 50%; /* #FE5000 */
+
+    --radius: 0.75rem;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(19 100% 50%), hsl(19 100% 60%));
+    --gradient-subtle: linear-gradient(180deg, hsl(35 100% 97%), hsl(33 48% 88%));
+
+    /* Shadows */
+    --shadow-lg: 0 20px 60px -15px hsl(19 100% 50% / 0.2);
+    --shadow-glow: 0 0 40px hsl(19 100% 60% / 0.3);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 0 0% 0%; /* #000000 */
+    --foreground: 35 100% 97%; /* #FFF8EE */
+
+    --card: 0 0% 5%;
+    --card-foreground: 35 100% 97%; /* #FFF8EE */
+
+    --popover: 0 0% 5%;
+    --popover-foreground: 35 100% 97%; /* #FFF8EE */
+
+    --primary: 19 100% 50%; /* #FE5000 */
+    --primary-foreground: 35 100% 97%; /* #FFF8EE */
+
+    --secondary: 33 48% 20%;
+    --secondary-foreground: 35 100% 97%; /* #FFF8EE */
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 33 48% 88%;
+
+    --accent: 19 100% 50%; /* #FE5000 */
+    --accent-foreground: 35 100% 97%; /* #FFF8EE */
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 35 100% 97%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 19 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .hexagon-clip {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

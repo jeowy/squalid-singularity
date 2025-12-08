@@ -1,0 +1,54 @@
+---
+// 1. Interactive Components (Need JS)
+import Navigation from "./Navigation"; 
+import FAQ from "./FAQ"; // Radix Accordion needs JS
+import { Toaster } from "@/components/ui/sonner";
+
+// 2. Static-Capable Components (Currently React, but safe to load lazily)
+// Since these don't use useState/useEffect, 'client:visible' is safe and efficient.
+import Testimonial from "./Testimonial";
+import Benefits from "./Benefits";
+import Credibility from "./Credibility";
+import HowItWorks from "./HowItWorks";
+import CaseStudies from "./CaseStudies";
+import Integrations from "./Integrations";
+
+// 3. The Astro Native Component
+import Hero from "./Hero.astro";       
+
+import type { PageContent } from "@/data/pagesData";
+import Footer from "./Footer.astro";
+
+interface Props {
+  content: PageContent;
+}
+
+const { content } = Astro.props;
+---
+
+<div class="min-h-screen">
+  <Toaster client:idle />
+  
+  <Navigation client:load />
+  
+  <Hero 
+    content={content.hero} 
+    digitizeGallery={content.digitizeGallery} 
+  />
+  
+  <Testimonial client:visible content={content.testimonial} />
+  
+  <Benefits client:visible content={content.benefits} />
+  
+  <Credibility client:visible content={content.credibility} />
+  
+  <HowItWorks client:visible content={content.howItWorks} />
+  
+  <CaseStudies client:visible content={content.caseStudies} />
+  
+  <Integrations client:visible />
+  
+  <FAQ client:visible content={content.faq} />
+
+  <Footer />
+</div>

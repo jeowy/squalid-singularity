@@ -1,0 +1,101 @@
+---
+import { Sparkles } from "lucide-react";
+import dashboardPreview from "@/assets/dashboard-preview.webp"; 
+import PhoneFrame from "@/components/PhoneFrame.astro"; 
+import HeroInteraction from "@/components/HeroInteraction";
+import HeroCarousel from "@/components/HeroCarousel.astro";
+import DigitizeGallery from "@/components/react/carousel/DigitizeGallery";
+// Import correct types
+import type { HeroContent, HeroSlide, DigitizeGalleryData } from "@/data/pagesData";
+
+interface Props {
+  content: HeroContent;
+  // Add the optional prop for Digitize page
+  digitizeGallery?: DigitizeGalleryData;
+}
+
+// 1. FIX: Destructure 'digitizeGallery' so it is defined in this scope
+const { content, digitizeGallery } = Astro.props;
+
+// 2. FIX: Create a fallback that matches the 'HeroSlide' structure (not the old GalleryItem structure)
+// The Facade expects an array of slides with a 'type', not just images.
+const defaultSlides: HeroSlide[] = [
+  {
+    type: "single",
+    images: [content.desktopImage || dashboardPreview]
+  }
+];
+
+// Use the content from pagesData, or fall back to the default single slide
+const slidesToRender = content.heroSlides || defaultSlides;
+---
+
+<section class="relative overflow-hidden bg-gradient-hero py-16 px-4 sm:px-6 lg:px-8">
+  <div class="absolute inset-0 bg-grid-white/10 bg-[size:20px_20px]"></div>
+  
+  <div class="relative mx-auto max-w-7xl">
+    <div class="text-center">
+      
+      <div class="inline-flex items-center gap-1 sm:gap-2 rounded-full bg-primary-foreground/10 px-2 sm:px-3 py-1 mb-8 backdrop-blur-sm">
+        <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-primary-foreground" />
+        <span class="text-xs sm:text-sm font-medium text-primary-foreground whitespace-nowrap">
+          {content.badgeText}
+        </span>
+      </div>
+      
+      <h1 class="
+        responsive-headline
+        font-bruta font-bold text-center text-primary-foreground leading-[1.1] tracking-tight mb-8 mx-auto
+        text-balance
+      ">
+        {content.headline}
+      </h1>
+
+      <HeroInteraction 
+        client:load
+        buttonText={content.buttonText}
+        placeholder={content.emailPlaceholder}
+      >
+        
+        {/* LOGIC SWITCH: Digitize Gallery vs Standard Layouts */}
+        
+        {digitizeGallery ? (
+           
+           // 1. DIGITIZE PAGE (React Grid + Lightbox)
+           <DigitizeGallery 
+             client:visible 
+             headerImage={digitizeGallery.header} 
+             gridImages={digitizeGallery.gridImages} 
+           />
+
+        ) : (
+           
+           // 2. STANDARD PAGES (YardApp, Carriers, Capacity)
+           // We use the Static Facade Carousel here
+           <div class="w-full h-full">
+             {/* FIX: Pass 'slides' instead of 'items' */}
+             <HeroCarousel slides={slidesToRender} />
+           </div>
+        )}
+
+      </HeroInteraction>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .responsive-headline {
+    font-size: 9vw; 
+    max-width: 100%;
+  }
+  @media (min-width: 640px) {
+    .responsive-headline { font-size: 7vw; max-width: 90%; }
+  }
+  @media (min-width: 1024px) {
+    .responsive-headline { font-size: 5vw; max-width: 85%; }
+  }
+  @media (min-width: 1280px) {
+    .responsive-headline { font-size: 80px; max-width: 1200px; }
+  }
+</style>
