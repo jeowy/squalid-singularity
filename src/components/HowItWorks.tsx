@@ -7,42 +7,25 @@ interface HowItWorksProps {
 }
 
 // ==========================================
-
 // 1. ASSETS & ICONS
-
 // ==========================================
 
 const getIcon = (iconName: "upload" | "toggle" | "refresh") => {
   const icons = { upload: Upload, toggle: ToggleRight, refresh: RefreshCw };
-
   return icons[iconName];
 };
 
 const MobileArrowRight = () => (
   <svg viewBox="0 0 60 140" fill="none" className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
     <path d="M10 0 C 10 50, 45 60, 45 140" stroke="#FF9E7D" strokeWidth="3" fill="none" strokeLinecap="round" />
-
-    <path
-      d="M45 140 L 37 130 M 45 140 L 53 130"
-      stroke="#FF9E7D"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
+    <path d="M45 140 L 37 130 M 45 140 L 53 130" stroke="#FF9E7D" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const MobileArrowLeft = () => (
   <svg viewBox="0 0 60 140" fill="none" className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
     <path d="M50 0 C 50 50, 15 60, 15 140" stroke="#FF9E7D" strokeWidth="3" fill="none" strokeLinecap="round" />
-
-    <path
-      d="M15 140 L 7 130 M 15 140 L 23 130"
-      stroke="#FF9E7D"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
+    <path d="M15 140 L 7 130 M 15 140 L 23 130" stroke="#FF9E7D" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -54,22 +37,17 @@ const BackgroundPattern = () => (
           <circle cx="2" cy="2" r="1.5" fill="#FF9E7D" opacity="0.3" />
         </pattern>
       </defs>
-
       <rect width="100%" height="100%" fill="url(#matrix-dots)" />
     </svg>
   </div>
 );
 
 // ==========================================
-
 // 2. SUB-COMPONENTS
-
 // ==========================================
 
 const CommentBox = ({ text, className = "" }: { text: string; className?: string }) => (
-  <div
-    className={`bg-[#FF9E7D] text-white px-4 py-3 rounded-lg shadow-md text-[11px] font-recoleta italic leading-tight border-2 border-white/40 relative z-10 ${className}`}
-  >
+  <div className={`bg-[#FF9E7D] text-white px-4 py-3 rounded-lg shadow-md text-[11px] lg:text-[13px] xl:text-sm font-recoleta italic leading-tight border-2 border-white/40 relative z-10 ${className}`}>
     {text}
   </div>
 );
@@ -83,10 +61,7 @@ const StepCard = ({ step, isLast }: { step: any; isLast: boolean }) => {
         step.highlight
           ? "border-2 border-primary/20 shadow-glow"
           : isLast
-            ? // FIX: Removed 'pb-20'.
-              // Mobile: Uses standard p-4 (no extra bottom padding needed).
-              // Desktop: Uses md:pb-12 (48px). The pill overlaps by ~20px, leaving ~28px of visual breathing room.
-              "bg-foreground border-border text-background md:pb-8"
+            ? "bg-foreground border-border text-background md:pb-8"
             : "border-border"
       }`}
     >
@@ -99,9 +74,7 @@ const StepCard = ({ step, isLast }: { step: any; isLast: boolean }) => {
           <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isLast ? "text-primary" : "text-primary"}`} />
         </div>
         <div>
-          <h3
-            className={`font-recoleta font-semibold mb-1 sm:mb-2 text-sm sm:text-base ${isLast ? "" : "text-foreground"}`}
-          >
+          <h3 className={`font-recoleta font-semibold mb-1 sm:mb-2 text-sm sm:text-base ${isLast ? "" : "text-foreground"}`}>
             {step.title}
           </h3>
           <p className={`text-xs sm:text-sm ${isLast ? "opacity-80" : "text-muted-foreground"}`}>{step.description}</p>
@@ -130,14 +103,9 @@ const MobileConnector = ({ index, annotation }: { index: number; annotation?: st
     <div className={`md:hidden relative w-full h-[140px] -my-6 flex items-center justify-between px-1 z-10`}>
       {isEven ? (
         <>
-          {/* Comment 1: Pulled higher (-mt-16) */}
-
           <div className="w-2/3 pl-1 h-full flex items-center">
             {annotation && <CommentBox text={annotation} className="transform -rotate-2 origin-top-right -mt-16" />}
           </div>
-
-          {/* Arrow 1: Small padding (pb-2) to save the tip */}
-
           <div className="w-1/3 h-full flex justify-center pb-2">
             <div className="h-full w-[60px] p-2">
               <MobileArrowRight />
@@ -146,16 +114,11 @@ const MobileConnector = ({ index, annotation }: { index: number; annotation?: st
         </>
       ) : (
         <>
-          {/* Arrow 2: Large padding (pb-8) to avoid Step 3 Label */}
-
           <div className="w-1/3 h-full flex justify-end pr-6 pb-8">
             <div className="h-full w-[60px] p-2">
               <MobileArrowLeft />
             </div>
           </div>
-
-          {/* Comment 2: Pushed down less aggressively (mt-8) so it's not cut off */}
-
           <div className="w-2/3 pr-1 h-full flex items-center justify-end">
             {annotation && <CommentBox text={annotation} className="transform rotate-2 origin-bottom-left mt-8" />}
           </div>
@@ -166,12 +129,22 @@ const MobileConnector = ({ index, annotation }: { index: number; annotation?: st
 };
 
 // ==========================================
-
 // 3. MAIN COMPONENT
-
 // ==========================================
 
 const HowItWorks = ({ content }: { content: HowItWorksContent }) => {
+  
+  // Helper to safely parse the footer annotation
+  const getFooterParts = (text: string) => {
+    if (!text.includes(":")) return { label: "Note", body: text };
+    
+    const [label, ...rest] = text.split(":");
+    const body = rest.join(":").trim();
+    const cleanBody = body.replace(/^[\(\s]+|[\)\s]+$/g, '');
+    
+    return { label, body: cleanBody };
+  };
+
   return (
     <section className="py-12 px-4 sm:px-6 lg:px-8 bg-background relative overflow-x-clip">
       <BackgroundPattern />
@@ -179,13 +152,10 @@ const HowItWorks = ({ content }: { content: HowItWorksContent }) => {
       <div className="w-full max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bruta font-bold tracking-tight text-foreground sm:text-4xl">{content.title}</h2>
-
           <p className="text-muted-foreground mt-3 font-recoleta text-sm sm:text-base">{content.subtitle}</p>
         </div>
 
         <div className="relative flex flex-col items-center">
-          {/* Desktop Line */}
-
           <div className="absolute top-6 bottom-12 w-0.5 bg-border border-l-2 border-dashed left-1/2 -translate-x-1/2 hidden md:block z-0"></div>
 
           {content.steps.map((step, index) => {
@@ -194,7 +164,6 @@ const HowItWorks = ({ content }: { content: HowItWorksContent }) => {
             return (
               <div key={step.stepNumber} className="w-full flex flex-col items-center relative">
                 {/* DESKTOP: SYMMETRICAL GRID */}
-
                 <div className="hidden md:grid grid-cols-[1fr_2fr_1fr] gap-2 w-full relative z-20 mb-8 items-start">
                   <div className="flex justify-end pr-0 opacity-0 pointer-events-none" aria-hidden="true">
                     <div className="w-full max-w-[240px]" />
@@ -203,15 +172,20 @@ const HowItWorks = ({ content }: { content: HowItWorksContent }) => {
                   <div className="relative">
                     <StepCard step={step} isLast={isLastStep} />
 
-                    {/* DESKTOP KISS */}
-
+                    {/* DESKTOP FOOTER ANNOTATION */}
                     {isLastStep && content.footerAnnotation && (
                       <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-30 w-max">
                         <div className="bg-[#FDF8F6] border border-dashed border-border rounded-full px-8 py-2 shadow-sm">
                           <p className="text-muted-foreground font-medium text-xs flex items-center justify-center gap-2">
-                            <span className="text-primary font-bold">{content.footerAnnotation.split(":")[0]}:</span>
-
-                            <span>({content.footerAnnotation.split("(")[1]?.replace(")", "")})</span>
+                            {(() => {
+                              const { label, body } = getFooterParts(content.footerAnnotation);
+                              return (
+                                <>
+                                  <span className="text-primary font-bold">{label}:</span>
+                                  <span>({body})</span>
+                                </>
+                              );
+                            })()}
                           </p>
                         </div>
                       </div>
@@ -222,24 +196,21 @@ const HowItWorks = ({ content }: { content: HowItWorksContent }) => {
                     {step.desktopAnnotation && (
                       <div className="flex items-start w-full">
                         <span className="text-[#FF9E7D] text-2xl mr-2 -mt-1 flex-shrink-0">←</span>
-
                         <CommentBox text={step.desktopAnnotation} className="w-full max-w-[240px] rotate-2" />
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* MOBILE STACK (Underlay) */}
-
+                {/* MOBILE STACK */}
                 <div className="md:hidden w-full flex flex-col items-center relative z-20">
                   <div className={`w-full relative z-20`}>
                     <StepCard step={step} isLast={isLastStep} />
                   </div>
-
+                  
+                  {/* Connector between steps (Space 1 & Space 2) */}
                   {!isLastStep && <MobileConnector index={index} annotation={step.mobileAnnotation} />}
                 </div>
-
-                {/* Desktop Spacer */}
 
                 <div className="hidden md:block h-4"></div>
               </div>
