@@ -1,19 +1,25 @@
 ---
 import { Sparkles } from "lucide-react";
 import dashboardPreview from "@/assets/dashboard-preview.webp"; 
-import PhoneFrame from "@/components/PhoneFrame.astro"; 
 import HeroInteraction from "@/components/HeroInteraction";
 import HeroCarousel from "@/components/HeroCarousel.astro";
 import DigitizeGallery from "@/components/react/carousel/DigitizeGallery";
+import VisibilityGallery from "@/components/react/carousel/VisibilityGallery";
+import CapacityGallery from "@/components/react/carousel/CapacityGallery";
+import CarriersGallery from "@/components/react/carousel/CarriersGallery";
+
 // Import correct types
-import type { HeroContent, HeroSlide, DigitizeGalleryData } from "@/data/pagesData";
+import type { HeroContent, HeroSlide, DigitizeGalleryData, VisibilityGalleryData, CapacityGalleryData, CarriersGalleryData } from "@/data/pagesData";
 
 interface Props {
   content: HeroContent;
   digitizeGallery?: DigitizeGalleryData;
+  visibilityGallery?: VisibilityGalleryData;
+  capacityGallery?: CapacityGalleryData;
+  carriersGallery?: CarriersGalleryData;
 }
 
-const { content, digitizeGallery } = Astro.props;
+const { content, digitizeGallery, visibilityGallery, capacityGallery, carriersGallery } = Astro.props;
 
 const defaultSlides: HeroSlide[] = [
   {
@@ -50,9 +56,27 @@ const slidesToRender = content.heroSlides || defaultSlides;
         client:load
         buttonText={content.buttonText}
         placeholder={content.emailPlaceholder}
+        fitContent={!!visibilityGallery}
       >
         
-        {digitizeGallery ? (
+        {visibilityGallery ? (
+           <VisibilityGallery 
+             client:visible={{ rootMargin: "200px" }}
+             baseImage={visibilityGallery.baseImage}
+             overlayImage={visibilityGallery.overlayImage}
+             galleryImages={visibilityGallery.galleryImages}
+           />
+        ) : carriersGallery ? (
+           <CarriersGallery
+             client:visible={{ rootMargin: "200px" }}
+             image={carriersGallery.staticImage}
+           />
+        ) : capacityGallery ? (
+           <CapacityGallery 
+             client:visible={{ rootMargin: "200px" }}
+             image={capacityGallery.staticImage}
+           />
+        ) : digitizeGallery ? (
            <DigitizeGallery 
              client:visible={{ rootMargin: "200px" }} 
              headerImage={digitizeGallery.header} 

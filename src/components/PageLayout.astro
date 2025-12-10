@@ -1,11 +1,10 @@
 ---
 // 1. Interactive Components (Need JS)
 import Navigation from "./Navigation"; 
-import FAQ from "./FAQ"; // Radix Accordion needs JS
+import FAQ from "./FAQ";
 import { Toaster } from "@/components/ui/sonner";
 
-// 2. Static-Capable Components (Currently React, but safe to load lazily)
-// Since these don't use useState/useEffect, 'client:visible' is safe and efficient.
+// 2. Static-Capable Components
 import Testimonial from "./Testimonial";
 import Benefits from "./Benefits";
 import Credibility from "./Credibility";
@@ -33,7 +32,10 @@ const { content } = Astro.props;
   
   <Hero 
     content={content.hero} 
-    digitizeGallery={content.digitizeGallery} 
+    digitizeGallery={content.digitizeGallery}
+    visibilityGallery={content.visibilityGallery}
+    capacityGallery={content.capacityGallery}
+    carriersGallery={content.carriersGallery}
   />
   
   <Testimonial client:visible content={content.testimonial} />

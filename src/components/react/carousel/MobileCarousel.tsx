@@ -12,10 +12,8 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
   const [direction, setDirection] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   
-  // Ref to check cached status
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Reset load state on slide change
   useEffect(() => {
     setIsLoaded(false);
   }, [current]);
@@ -40,8 +38,8 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      
-      <div className="relative w-full rounded-xl overflow-hidden shadow-sm border border-border bg-white">
+      {/* FIX: Removed 'border border-border' class to remove white outline */}
+      <div className="relative w-full rounded-xl overflow-hidden shadow-sm bg-white">
         <div className="relative w-full overflow-hidden min-h-[200px]">
              <AnimatePresence initial={false} custom={direction} mode="popLayout">
               <motion.img
@@ -66,13 +64,10 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
                   }
                 }}
                 onLoad={() => setIsLoaded(true)}
-                // FIX: Merged the two refs into one callback
                 ref={(node) => {
-                    // 1. Update the local ref
                     if (imgRef.current !== node) {
                         (imgRef as any).current = node;
                     }
-                    // 2. Check immediately if cached
                     if (node && node.complete) setIsLoaded(true);
                 }}
                 className={`relative w-full h-auto block transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
@@ -110,7 +105,6 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
           />
         ))}
       </div>
-
     </div>
   );
 };

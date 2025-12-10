@@ -1,7 +1,4 @@
 import dashboardPreview from "@/assets/dashboard-preview.webp";
-import appShot1 from "@/assets/appscreenshot1.webp"; 
-import appShot2 from "@/assets/appscreenshot2.webp";
-import propertyView from "@/assets/propertyview.webp";
 import digiHeader from "@/assets/solutionsscreenshots/digitization/dashboardheader.webp";
 import digi1 from "@/assets/solutionsscreenshots/digitization/appointmentscreated.webp";
 import digi2 from "@/assets/solutionsscreenshots/digitization/arrivedontime.webp";
@@ -10,12 +7,66 @@ import digi4 from "@/assets/solutionsscreenshots/digitization/completedontime.we
 import digi5 from "@/assets/solutionsscreenshots/digitization/earlyappointments.webp";
 import digi6 from "@/assets/solutionsscreenshots/digitization/lateappointments.webp";
 
+// --- VISIBILITY IMPORTS ---
+import visBase from "@/assets/solutionsscreenshots/visibility/propertyview.webp";
+import visOverlay from "@/assets/solutionsscreenshots/visibility/appscreenshot1.webp";
+import visGallery2 from "@/assets/solutionsscreenshots/visibility/appscreenshot2.webp";
+import visGallery3 from "@/assets/solutionsscreenshots/visibility/appscreenshot3.webp"; 
+import visGallery4 from "@/assets/solutionsscreenshots/visibility/appscreenshot4.webp";
+import visGallery5 from "@/assets/solutionsscreenshots/visibility/appscreenshot5.webp";
+
+// --- CAPACITY IMPORTS ---
+import capSchedule from "@/assets/solutionsscreenshots/capacity/scheduleview.webp";
+
+// --- CARRIERS IMPORTS ---
+import carPortal from "@/assets/solutionsscreenshots/carriers/portal2.webp";
+
 export type GalleryStyle = 'bottom-flush' | 'top-flush' | 'centered' | 'pan-horizontal';
-export interface DigitizeGalleryData { header: ImageMetadata; gridImages: ImageMetadata[]; }
+
+export interface DigitizeGalleryData {
+  header: ImageMetadata;
+  gridImages: ImageMetadata[];
+}
+
+export interface VisibilityGalleryData {
+  baseImage: ImageMetadata;
+  overlayImage: ImageMetadata;
+  galleryImages: ImageMetadata[];
+}
+
+export interface CapacityGalleryData {
+  staticImage: ImageMetadata;
+}
+
+export interface CarriersGalleryData {
+  staticImage: ImageMetadata;
+}
+
 export type SlideLayoutType = "single" | "double" | "triple" | "quad" | "overlay";
-export interface HeroSlide { type: "single" | "double" | "triple" | "quad" | "overlay"; images: ImageMetadata[]; }
-export interface DesktopComposition { baseImage: ImageMetadata; floatingImage: ImageMetadata; floatPosition: 'right' | 'left'; }
-export interface HeroContent { badgeText: string; headline: string; emailPlaceholder: string; buttonText: string; dashboardAlt: string; desktopImage?: ImageMetadata; mobileGallery?: HeroGalleryItem[]; desktopComposition?: DesktopComposition; heroSlides?: HeroSlide[]; }
+
+export interface HeroSlide {
+  type: "single" | "double" | "triple" | "quad" | "overlay";
+  images: ImageMetadata[];
+}
+
+export interface DesktopComposition {
+  baseImage: ImageMetadata;
+  floatingImage: ImageMetadata;
+  floatPosition: 'right' | 'left';
+}
+
+export interface HeroContent {
+  badgeText: string;
+  headline: string;
+  emailPlaceholder: string;
+  buttonText: string;
+  dashboardAlt: string;
+  desktopImage?: ImageMetadata;
+  mobileGallery?: HeroGalleryItem[];
+  desktopComposition?: DesktopComposition;
+  heroSlides?: HeroSlide[];
+}
+
 export interface HeroGalleryItem { src: ImageMetadata; alt: string; style: GalleryStyle; }
 export interface CredibilityContent { g2Rating: string; g2Link: string; uptimePercentage: string; uptimeLabel: string; capterraLink: string; capterraRating: string; supportHours: string; supportLabel: string; securityBadges: { iso: string; isoSubtext: string; gdpr: string; soc2: string; soc2Subtext: string; }; }
 export interface HowItWorksContent { title: string; subtitle: string; steps: { stepNumber: number; title: string; description: string; icon: "upload" | "toggle" | "refresh"; desktopAnnotation?: string; mobileAnnotation?: string; visualTags?: string[]; highlight?: boolean; }[]; footerAnnotation?: string; }
@@ -26,7 +77,20 @@ export interface CaseStudyContent { company: string; industry: string; metricVal
 export interface CaseStudiesContent { caseStudies: CaseStudyContent[]; }
 export interface FAQItem { question: string; answer: string; }
 export interface FAQContent { faqs: FAQItem[]; }
-export interface PageContent { hero: HeroContent; credibility: CredibilityContent; testimonial: TestimonialContent; benefits: BenefitsContent; howItWorks: HowItWorksContent; caseStudies: CaseStudiesContent; faq: FAQContent; digitizeGallery?: DigitizeGalleryData; }
+
+export interface PageContent {
+  hero: HeroContent;
+  credibility: CredibilityContent;
+  testimonial: TestimonialContent;
+  benefits: BenefitsContent;
+  howItWorks: HowItWorksContent;
+  caseStudies: CaseStudiesContent;
+  faq: FAQContent;
+  digitizeGallery?: DigitizeGalleryData;
+  visibilityGallery?: VisibilityGalleryData;
+  capacityGallery?: CapacityGalleryData;
+  carriersGallery?: CarriersGalleryData;
+}
 
 // ---------------------------------------------------------
 // 1. DIGITIZATION (Default)
@@ -89,7 +153,6 @@ export const defaultContent: PageContent = {
         title: "Manage by Exception",
         description: "Just mark loads as arrived or departed and instantly get reports you can use.",
         icon: "toggle",
-        // Space 2: Footer content
         mobileAnnotation: "It all comes down to getting stuff off your plate.",
         highlight: true,
       },
@@ -129,15 +192,20 @@ export const defaultContent: PageContent = {
 // ---------------------------------------------------------
 // 2. CARRIERS (Mapped to carriersContent)
 // ---------------------------------------------------------
-export const carriersContent = {
+export const carriersContent: PageContent = { 
   ...defaultContent,
+  digitizeGallery: undefined, // Break inheritance
+  carriersGallery: {
+    staticImage: carPortal
+  },
   hero: {
     ...defaultContent.hero,
     headline: "MAKE IT EFFORTLESS FOR YOUR CARRIERS AND CUSTOMERS TO BOOK APPOINTMENTS",
-    desktopImage: dashboardPreview,
+    // FIX: Update these to use the new portal image
+    desktopImage: carPortal,
     mobileGallery: [
-      { src: dashboardPreview, alt: "Dashboard", style: 'centered' },
-      { src: dashboardPreview, alt: "Dashboard", style: 'centered' }
+      { src: carPortal, alt: "Carrier Portal", style: 'centered' },
+      { src: carPortal, alt: "Carrier Portal", style: 'centered' }
     ]
   },
   howItWorks: {
@@ -150,7 +218,6 @@ export const carriersContent = {
         description: "Just share an invite link. Your partners onboard themselves and add their own drivers in minutes.",
         icon: "upload",
         visualTags: ["Self-Service", "Quick Setup"],
-        // Space 1: Side Annotation
         mobileAnnotation: "No more back-and-forth negotiation.",
       },
       {
@@ -159,7 +226,6 @@ export const carriersContent = {
         description: "You decide the mandatory docs and rules. Carriers only see time slots that actually work for their load type.",
         icon: "toggle",
         desktopAnnotation: "No more back-and-forth negotiation.",
-        // Space 2: Footer Annotation
         mobileAnnotation: "Insight: You even get turnaround KPIs for carriers that don't collaborate.",
         highlight: true,
       },
@@ -180,12 +246,12 @@ export const carriersContent = {
   },
   benefits: {
     benefits: [
-      { icon: "calendar" as const, title: "Easy Onboarding", description: "Simple bookings portal with rules and required docs up front.", },
-      { icon: "database" as const, title: "Less Back-and-Forth", description: "Share docs and status in-system rather than on the phone.", },
-      { icon: "barChart" as const, title: "Fewer No-Shows", description: "Set automatic reminders, easy rescheduling and clear policies.", },
-      { icon: "users" as const, title: "Cut Detention Fees", description: "Prevent disputes with time-stamped check-in/outs.", },
-      { icon: "fileCheck" as const, title: "Compare Performance", description: "Use scorecards to improve carrier selection and management.", },
-      { icon: "archive" as const, title: "On-Time Incentives", description: "Prioritize scheduled arrivals and watch adherence improve", },
+      { icon: "calendar", title: "Easy Onboarding", description: "Simple bookings portal with rules and required docs up front.", },
+      { icon: "database", title: "Less Back-and-Forth", description: "Share docs and status in-system rather than on the phone.", },
+      { icon: "barChart", title: "Fewer No-Shows", description: "Set automatic reminders, easy rescheduling and clear policies.", },
+      { icon: "users", title: "Cut Detention Fees", description: "Prevent disputes with time-stamped check-in/outs.", },
+      { icon: "fileCheck", title: "Compare Performance", description: "Use scorecards to improve carrier selection and management.", },
+      { icon: "archive", title: "On-Time Incentives", description: "Prioritize scheduled arrivals and watch adherence improve", },
     ],
   },
   caseStudies: {
@@ -212,17 +278,21 @@ export const carriersContent = {
   },
 };
 
-// ---------------------------------------------------------
-// 3. VISIBILITY (Mapped to yardappContent)
-// ---------------------------------------------------------
-export const yardappContent = {
+// ... [yardappContent and capacityContent remain unchanged] ...
+export const yardappContent: PageContent = {
   ...defaultContent,
+  digitizeGallery: undefined,
   hero: {
     ...defaultContent.hero,
     headline: "SEE WHAT’S AT YOUR DOCKS, ON THE WAY, OR IN YOUR YARD, AND MANAGE IT ALL FROM THE APP",
-    heroSlides: [
-      { type: "overlay", images: [dashboardPreview, propertyView, appShot1] },
-    ]
+    emailPlaceholder: "Enter your work email",
+    buttonText: "Get Free Demo",
+    dashboardAlt: "Visibility Dashboard",
+  },
+  visibilityGallery: {
+    baseImage: visBase,
+    overlayImage: visOverlay,
+    galleryImages: [visOverlay, visGallery2, visGallery3, visGallery4, visGallery5]
   },
   howItWorks: {
     title: "HOW IT WORKS",
@@ -234,7 +304,6 @@ export const yardappContent = {
         description: "Make specific fields (like PO#) or documents mandatory so you can always identify a load the moment it arrives.",
         icon: "upload",
         visualTags: ["Mandatory Fields", "Docs"],
-        // Space 1: Side Annotation
         mobileAnnotation: "Configurable Alert: 'Detention risk detected' — lets you pivot before fees accrue.",
       },
       {
@@ -243,7 +312,6 @@ export const yardappContent = {
         description: "When anyone requests a schedule change, notifications trigger instantly—keeping your dock and yard teams in sync.",
         icon: "toggle",
         desktopAnnotation: "Configurable Alert: 'Detention risk detected' — lets you pivot before fees accrue.",
-        // Space 2: Footer Annotation
         mobileAnnotation: "Result: Your gate, yard, and dock teams finally see the same reality.",
         highlight: true,
       },
@@ -264,12 +332,12 @@ export const yardappContent = {
   }, 
   benefits: {
     benefits: [
-      { icon: "barChart" as const, title: "Live ETAs & Smart Alerts", description: "Auto-ETA refresh, notifications, and real-time board visibility.", },
-      { icon: "archive" as const, title: "Mobile Load Info", description: "Check who/what/PO/ASN in the app in one tap.", },
-      { icon: "users" as const, title: "Improve Yard Flow", description: "Order jockey moves and let drivers check themselves in.", },
-      { icon: "calendar" as const, title: "Quick Workload Forecast", description: "See what’s coming in later and plan proactively.", },
-      { icon: "database" as const, title: "Smart Door Assignment", description: "Automatically check for conflicts and resequence based on load data.", },
-      { icon: "fileCheck" as const, title: "Easy Inspections", description: "Access checklists and packing lists in-app or printable.", },
+      { icon: "barChart", title: "Live ETAs & Smart Alerts", description: "Auto-ETA refresh, notifications, and real-time board visibility.", },
+      { icon: "archive", title: "Mobile Load Info", description: "Check who/what/PO/ASN in the app in one tap.", },
+      { icon: "users", title: "Improve Yard Flow", description: "Order jockey moves and let drivers check themselves in.", },
+      { icon: "calendar", title: "Quick Workload Forecast", description: "See what’s coming in later and plan proactively.", },
+      { icon: "database", title: "Smart Door Assignment", description: "Automatically check for conflicts and resequence based on load data.", },
+      { icon: "fileCheck", title: "Easy Inspections", description: "Access checklists and packing lists in-app or printable.", },
     ],
   },
   caseStudies: {
@@ -296,11 +364,9 @@ export const yardappContent = {
   },
 };
 
-// ---------------------------------------------------------
-// 4. PRODUCTIVITY (Mapped to capacityContent)
-// ---------------------------------------------------------
-export const capacityContent = {
+export const capacityContent: PageContent = {
   ...defaultContent,
+  digitizeGallery: undefined,
   hero: {
     ...defaultContent.hero,
     headline: "ELIMINATE BOTTLENECKS IN YOUR LOADING DOCK, SLASH OVERTIME AND UNLOCK CAPACITY",
@@ -309,6 +375,9 @@ export const capacityContent = {
       { src: dashboardPreview, alt: "Dashboard", style: 'centered' },
       { src: dashboardPreview, alt: "Dashboard", style: 'centered' }
     ]
+  },
+  capacityGallery: {
+    staticImage: capSchedule
   },
   howItWorks: {
     title: "HOW IT WORKS",
@@ -319,8 +388,6 @@ export const capacityContent = {
         title: "Track Durations",
         description: "Automatically log the average loading and unloading duration for every different load type.",
         icon: "upload", 
-        // FIX: Removed desktopAnnotation from Step 1
-        // Space 1: Side Annotation
         mobileAnnotation: "Operations Control: Don't let Sales dictate your inventory flow.",
       },
       {
@@ -329,7 +396,6 @@ export const capacityContent = {
         description: "The system learns exactly how much time and labor you need for specific loads, replacing guesswork with data.",
         icon: "toggle", 
         desktopAnnotation: "Operations Control: Don't let Sales dictate your inventory flow.",
-        // Space 2: Footer Annotation
         mobileAnnotation: "Strategy: Use 'Actual Duration' data to justify headcount or equipment budgets.",
         highlight: true,
       },
@@ -350,12 +416,12 @@ export const capacityContent = {
   },
   benefits: {
     benefits: [
-      { icon: "barChart" as const, title: "Max Utilization", description: "Estimate slot lengths and optimize labor and equipment usage.", },
-      { icon: "calendar" as const, title: "Cut Down On Overtime", description: "Forecast demand and right-size shifts to flatten peaks.", },
-      { icon: "users" as const, title: "Better Jobs", description: "Improve morale, retention, and safety with balanced workloads.", },
-      { icon: "fileCheck" as const, title: "Faster Turnarounds", description: "Coordinate dock, yard, and warehouse to cut down dwell time.", },
-      { icon: "database" as const, title: "Continuous Improvement", description: "Pull reports, spot bottlenecks, and refine processes.", },
-      { icon: "archive" as const, title: "Absorb the Shock", description: "Handle disruptions and seasonal spikes without changing plans.", },
+      { icon: "barChart", title: "Max Utilization", description: "Estimate slot lengths and optimize labor and equipment usage.", },
+      { icon: "calendar", title: "Cut Down On Overtime", description: "Forecast demand and right-size shifts to flatten peaks.", },
+      { icon: "users", title: "Better Jobs", description: "Improve morale, retention, and safety with balanced workloads.", },
+      { icon: "fileCheck", title: "Faster Turnarounds", description: "Coordinate dock, yard, and warehouse to cut down dwell time.", },
+      { icon: "database", title: "Continuous Improvement", description: "Pull reports, spot bottlenecks, and refine processes.", },
+      { icon: "archive", title: "Absorb the Shock", description: "Handle disruptions and seasonal spikes without changing plans.", },
     ],
   },
   faq: {
@@ -371,7 +437,7 @@ export const capacityContent = {
       { question: "How does the schedule translate into hourly labor needs by door or zone?", answer: "The system provides the volume data, like loads and pallets arriving per hour. Managers can apply their own labor standards.", },
       { question: "How can I standardize dock operating procedures across multiple facilities?", answer: "You can build global templates for appointment types, buffer times, and booking rules. These can be deployed to all sites.", },
       { question: "What’s the most effective method to benchmark dock performance?", answer: "Compare 'Planned Duration' vs. 'Actual Duration.' This variance metric tells you instantly if your operations are running according to plan.", },
-      { question: "What level of manual oversight is still required once scheduling is automated?", answer: "The goal is 'management by exception'. The system handles routine bookings, so you only need to step in when there is an issue.", },
+      { question: "What level of manual oversight is still required once scheduling is automated?", answer: "The goal is 'management by exception'. The system handles routine bookings, so you only need to step in when there is an issue to resolve.", },
     ],
   },
 };

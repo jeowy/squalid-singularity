@@ -7,13 +7,11 @@ const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownTimeoutRef = useRef(null);
-
-  // 1. UPDATE THESE LINKS TO MATCH YOUR NEW ASTRO PAGES
   const dropdownItems = [
-    { label: "Digitize Your Dock", href: "/benefits/digitize-operations" },
-    { label: "Carriers", href: "/benefits/delight-carriers" },
-    { label: "Yard Management", href: "/benefits/see-everything" },
-    { label: "Capacity Providers", href: "/benefits/increase-capacity" },
+    { label: "Increase Capacity", href: "/benefits/increase-capacity" },
+    { label: "See Everything", href: "/benefits/see-everything" },
+    { label: "Delight Carriers", href: "/benefits/delight-carriers" },
+    { label: "Digitize Operations", href: "/benefits/digitize-operations" },
   ];
 
   // 2. DEFINE YOUR MAIN SITE URL (The Webflow site)

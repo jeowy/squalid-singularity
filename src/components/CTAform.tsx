@@ -7,7 +7,7 @@ import { toast } from "sonner";
 interface CTAFormProps {
   buttonText?: string;
   placeholder?: string;
-  onSuccess: () => void; 
+  onSuccess?: () => void; // Made optional to fix footer usage
 }
 
 export default function CTAForm({ buttonText = "Schedule a Demo", placeholder, onSuccess }: CTAFormProps) {
@@ -28,7 +28,8 @@ export default function CTAForm({ buttonText = "Schedule a Demo", placeholder, o
 
       setStatus('success');
       toast.success("Success! Please select a time below.");
-      onSuccess();
+      
+      if (onSuccess) onSuccess();
       
     } catch (error) {
       console.error(error);
@@ -46,7 +47,6 @@ export default function CTAForm({ buttonText = "Schedule a Demo", placeholder, o
     );
   }
 
-  // UPDATED: Reduced bottom margin from mb-16 to mb-8
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-md flex flex-col sm:flex-row gap-3 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <Input 
