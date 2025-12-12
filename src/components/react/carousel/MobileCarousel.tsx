@@ -16,6 +16,9 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
 
   useEffect(() => {
     setIsLoaded(false);
+    if (imgRef.current && imgRef.current.complete) {
+      setIsLoaded(true);
+    }
   }, [current]);
 
   const slideVariants = {
@@ -38,12 +41,12 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      {/* FIX: Removed 'border border-border' class to remove white outline */}
       <div className="relative w-full rounded-xl overflow-hidden shadow-sm bg-white">
         <div className="relative w-full overflow-hidden min-h-[200px]">
              <AnimatePresence initial={false} custom={direction} mode="popLayout">
               <motion.img
                 key={current}
+                ref={imgRef}
                 src={images[current].src}
                 alt={images[current].alt}
                 custom={direction}
@@ -64,25 +67,26 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
                   }
                 }}
                 onLoad={() => setIsLoaded(true)}
-                ref={(node) => {
-                    if (imgRef.current !== node) {
-                        (imgRef as any).current = node;
-                    }
-                    if (node && node.complete) setIsLoaded(true);
-                }}
                 className={`relative w-full h-auto block transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
             </AnimatePresence>
 
+            {/* FIX: Increased z-index to z-20 and added cursor-pointer to ensure clicks register */}
             <button
-              onClick={() => paginate(-1)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-primary hover:bg-white z-10"
+              onClick={(e) => {
+                e.stopPropagation();
+                paginate(-1);
+              }}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-primary hover:bg-white z-20 cursor-pointer"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
-              onClick={() => paginate(1)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-primary hover:bg-white z-10"
+              onClick={(e) => {
+                e.stopPropagation();
+                paginate(1);
+              }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-primary hover:bg-white z-20 cursor-pointer"
             >
               <ChevronRight className="w-5 h-5" />
             </button>

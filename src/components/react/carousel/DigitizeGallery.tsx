@@ -18,6 +18,9 @@ interface DigitizeGalleryProps {
 export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGalleryProps) {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const [isFocusedImageLoaded, setIsFocusedImageLoaded] = useState(false);
+  
+  // FIX 1: Add Ref to track the specific DOM element of the zoomed image
+  const focusedImgRef = useRef<HTMLImageElement>(null);
 
   const focusableImages = gridImages.map((img, i) => ({
     src: img.src,
@@ -26,29 +29,43 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
     height: img.height
   }));
 
+  // FIX 2: Reset load state AND check for cached images immediately
+  useEffect(() => {
+    if (focusedIndex !== null) {
+      setIsFocusedImageLoaded(false);
+      // If the browser already has it (cache), force true immediately
+      if (focusedImgRef.current && focusedImgRef.current.complete) {
+        setIsFocusedImageLoaded(true);
+      }
+    }
+  }, [focusedIndex]);
+
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (focusedIndex === null) return;
-    setIsFocusedImageLoaded(false); 
+    // Don't reset loaded here, let the useEffect handle it for consistency
     setFocusedIndex((prev) => (prev === focusableImages.length - 1 ? 0 : (prev || 0) + 1));
   };
 
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (focusedIndex === null) return;
-    setIsFocusedImageLoaded(false);
     setFocusedIndex((prev) => (prev === 0 ? focusableImages.length - 1 : (prev || 0) - 1));
   };
 
   return (
     <>
       <div className="block md:hidden w-full mt-0">
-        <MobileCarousel images={gridImages.map(img => ({ ...img, alt: 'Gallery Image' }))} />
+        {/* Pass mapped images clearly to MobileCarousel */}
+        <MobileCarousel images={gridImages.map((img, i) => ({ 
+          src: img.src, 
+          alt: `Digitize Screenshot ${i}`,
+          width: img.width,
+          height: img.height
+        }))} />
       </div>
 
       <div className="hidden md:block relative w-full max-w-6xl mx-auto mt-0">
         
-        {/* NAVIGATION ARROWS (Inside container) */}
+        {/* NAVIGATION ARROWS (Inside Container) */}
         <AnimatePresence>
           {focusedIndex !== null && (
             <>
@@ -78,10 +95,7 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
         {/* MAIN CONTAINER */}
         <div className="relative w-full rounded-2xl border border-primary/20 bg-white/50 shadow-custom-lg backdrop-blur-sm overflow-hidden leading-none text-[0px]">
           
-          {/* 1. GRID VIEW (The Anchor)
-             Always rendered to keep container size stable. 
-             Fades out when zoomed.
-          */}
+          {/* 1. GRID VIEW (Anchor) - Always in DOM to hold size */}
           <motion.div
             animate={{ opacity: focusedIndex !== null ? 0 : 1 }}
             transition={{ duration: 0.3 }}
@@ -100,10 +114,7 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
                 <div 
                   key={i} 
                   className="relative group cursor-pointer overflow-hidden"
-                  onClick={() => {
-                    setIsFocusedImageLoaded(false);
-                    setFocusedIndex(i);
-                  }} 
+                  onClick={() => setFocusedIndex(i)} 
                 >
                   <FadeInImage 
                     src={img.src} 
@@ -116,9 +127,7 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
             </div>
           </motion.div>
 
-          {/* 2. FOCUSED VIEW (The Overlay)
-             Absolute inset-0 sits exactly on top of the Grid.
-          */}
+          {/* 2. FOCUSED VIEW (Layer) - Absolute on top */}
           <AnimatePresence>
             {focusedIndex !== null && (
               <motion.div
@@ -137,8 +146,8 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
 
                 <motion.img
                   key={focusedIndex}
+                  ref={focusedImgRef} // FIX: Attached ref here
                   src={focusableImages[focusedIndex].src}
-                  // object-contain ensures it respects the aspect ratio of the grid container
                   className={`w-full h-full object-contain block transition-opacity duration-300 ${isFocusedImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                   onLoad={() => setIsFocusedImageLoaded(true)}
                 />

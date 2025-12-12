@@ -1,73 +1,80 @@
-import { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, ArrowLeft, Loader2 } from "lucide-react";
 
 interface LightboxProps {
-  isOpen: boolean;
-  images: { src: string; alt: string }[]; // Accepts standard image objects
-  currentIndex: number;
+  image: { src: string; alt: string };
+  onNext: (e: React.MouseEvent | KeyboardEvent) => void;
+  onPrev: (e: React.MouseEvent | KeyboardEvent) => void;
   onClose: () => void;
-  onNavigate: (index: number) => void;
 }
 
-export const Lightbox = ({ isOpen, images, currentIndex, onClose, onNavigate }: LightboxProps) => {
-  
-  // Handle Keyboard Navigation
+export default function Lightbox({ image, onNext, onPrev, onClose }: LightboxProps) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Reset load state when image source changes
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (!isOpen) return;
+    setIsLoaded(false);
+  }, [image.src]);
+
+  // Keyboard Navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") onNavigate(currentIndex === 0 ? images.length - 1 : currentIndex - 1);
-      if (e.key === "ArrowRight") onNavigate(currentIndex === images.length - 1 ? 0 : currentIndex + 1);
+      if (e.key === "ArrowRight") onNext(e);
+      if (e.key === "ArrowLeft") onPrev(e);
     };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [isOpen, currentIndex, onNavigate]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onNext, onPrev, onClose]);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-sm" onClick={onClose}>
-          
-          {/* Close Button */}
-          <button onClick={onClose} className="absolute top-4 right-4 text-white/70 hover:text-white p-2">
-            <X size={32} />
-          </button>
-
-          {/* Image Container */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="relative w-full h-full max-w-7xl max-h-screen p-4 flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()} // Prevent close on image click
-          >
-            <img 
-              src={images[currentIndex].src} 
-              alt={images[currentIndex].alt} 
-              className="max-w-full max-h-full object-contain shadow-2xl"
-            />
-          </motion.div>
-
-          {/* Navigation Buttons */}
-          {images.length > 1 && (
-            <>
-              <button 
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 text-white rounded-full hover:bg-white/20 transition-all"
-                onClick={(e) => { e.stopPropagation(); onNavigate(currentIndex === 0 ? images.length - 1 : currentIndex - 1); }}
-              >
-                <ChevronLeft size={24} />
-              </button>
-              <button 
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 text-white rounded-full hover:bg-white/20 transition-all"
-                onClick={(e) => { e.stopPropagation(); onNavigate(currentIndex === images.length - 1 ? 0 : currentIndex + 1); }}
-              >
-                <ChevronRight size={24} />
-              </button>
-            </>
-          )}
+    <motion.div
+      key="lightbox-layer"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="absolute inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Loading Spinner */}
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center z-40">
+          <Loader2 className="animate-spin text-primary w-8 h-8" />
         </div>
       )}
-    </AnimatePresence>
+
+      {/* Main Image */}
+      <motion.img
+        key={image.src}
+        src={image.src}
+        alt={image.alt}
+        className={`w-full h-full object-contain drop-shadow-2xl transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        onLoad={() => setIsLoaded(true)}
+      />
+
+      {/* Navigation Controls */}
+      <button 
+        onClick={onClose}
+        className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-white/90 hover:bg-white border border-border shadow-sm text-sm text-foreground rounded-full font-medium transition-all z-50"
+      >
+        <ArrowLeft size={14} className="text-primary" /> Back
+      </button>
+
+      <button
+        onClick={onPrev}
+        className="absolute top-1/2 -translate-y-1/2 left-4 p-2 rounded-full bg-white/90 shadow-md border border-gray-100 text-primary hover:scale-105 transition-all z-50"
+      >
+        <ChevronLeft size={24} />
+      </button>
+
+      <button
+        onClick={onNext}
+        className="absolute top-1/2 -translate-y-1/2 right-4 p-2 rounded-full bg-white/90 shadow-md border border-gray-100 text-primary hover:scale-105 transition-all z-50"
+      >
+        <ChevronRight size={24} />
+      </button>
+    </motion.div>
   );
-};
+}
