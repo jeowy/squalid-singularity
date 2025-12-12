@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowLeft, Loader2 } from "lucide-react";
 
@@ -11,13 +11,15 @@ interface LightboxProps {
 
 export default function Lightbox({ image, onNext, onPrev, onClose }: LightboxProps) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-  // Reset load state when image source changes
   useEffect(() => {
     setIsLoaded(false);
+    if (imgRef.current && imgRef.current.complete) {
+      setIsLoaded(true);
+    }
   }, [image.src]);
 
-  // Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -35,26 +37,25 @@ export default function Lightbox({ image, onNext, onPrev, onClose }: LightboxPro
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="absolute inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm"
+      className="absolute inset-0 z-50 flex items-center justify-center"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Loading Spinner */}
       {!isLoaded && (
         <div className="absolute inset-0 flex items-center justify-center z-40">
           <Loader2 className="animate-spin text-primary w-8 h-8" />
         </div>
       )}
 
-      {/* Main Image */}
       <motion.img
         key={image.src}
+        ref={imgRef}
         src={image.src}
         alt={image.alt}
-        className={`w-full h-full object-contain drop-shadow-2xl transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        // FIX: Removed 'drop-shadow-2xl'
+        className={`w-full h-full object-contain transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => setIsLoaded(true)}
       />
 
-      {/* Navigation Controls */}
       <button 
         onClick={onClose}
         className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-white/90 hover:bg-white border border-border shadow-sm text-sm text-foreground rounded-full font-medium transition-all z-50"

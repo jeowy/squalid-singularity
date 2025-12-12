@@ -69,7 +69,10 @@ const slidesToRender = content.heroSlides || defaultSlides;
         ) : carriersGallery ? (
            <CarriersGallery
              client:visible={{ rootMargin: "200px" }}
-             image={carriersGallery.staticImage}
+             masterImage={carriersGallery.masterImage}
+             mobileImages={carriersGallery.mobileImages}
+             galleryImages={carriersGallery.galleryImages}
+             hotspots={carriersGallery.hotspots}
            />
         ) : capacityGallery ? (
            <CapacityGallery 

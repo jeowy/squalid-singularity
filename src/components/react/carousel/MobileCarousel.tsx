@@ -22,9 +22,9 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
   }, [current]);
 
   const slideVariants = {
-    enter: (direction: number) => ({ x: direction > 0 ? 300 : -300, opacity: 0 }),
+    enter: (direction: number) => ({ x: direction > 0 ? 100 : -100, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (direction: number) => ({ x: direction < 0 ? 300 : -300, opacity: 0 }),
+    exit: (direction: number) => ({ x: direction < 0 ? 100 : -100, opacity: 0 }),
   };
 
   const paginate = (newDirection: number) => {
@@ -41,9 +41,24 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <div className="relative w-full rounded-xl overflow-hidden shadow-sm bg-white">
-        <div className="relative w-full overflow-hidden min-h-[200px]">
-             <AnimatePresence initial={false} custom={direction} mode="popLayout">
+      <div className="relative w-full rounded-xl overflow-hidden">
+        
+        {/* 1. THE ANCHOR (Invisible)
+            This stays in the layout flow (relative) to prop open the container height.
+            It matches the current image exactly.
+        */}
+        <img 
+          src={images[current].src}
+          alt="Anchor"
+          className="w-full h-auto opacity-0 pointer-events-none relative z-0"
+          aria-hidden="true"
+        />
+
+        {/* 2. THE ANIMATION LAYER (Absolute)
+            Sits directly on top of the anchor (inset-0).
+        */}
+        <div className="absolute inset-0 z-10">
+             <AnimatePresence initial={false} custom={direction}>
               <motion.img
                 key={current}
                 ref={imgRef}
@@ -56,7 +71,7 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
                 exit="exit"
                 transition={{
                   x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.3 },
+                  opacity: { duration: 0.2 },
                 }}
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
@@ -67,11 +82,12 @@ export const MobileCarousel = ({ images }: MobileCarouselProps) => {
                   }
                 }}
                 onLoad={() => setIsLoaded(true)}
-                className={`relative w-full h-auto block transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                // Absolute positioning to overlap the anchor exactly
+                className={`absolute w-full h-full object-contain block transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
             </AnimatePresence>
 
-            {/* FIX: Increased z-index to z-20 and added cursor-pointer to ensure clicks register */}
+            {/* Controls */}
             <button
               onClick={(e) => {
                 e.stopPropagation();

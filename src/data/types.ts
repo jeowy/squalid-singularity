@@ -15,8 +15,18 @@ export interface CapacityGalleryData {
   staticImage: ImageMetadata;
 }
 
+// FIX: Expanded Interface for Hotspots
 export interface CarriersGalleryData {
-  staticImage: ImageMetadata;
+  masterImage: ImageMetadata;
+  galleryImages: ImageMetadata[];
+  mobileImages: ImageMetadata[];
+  hotspots: {
+    left: string;
+    top: string;
+    width: string;
+    height: string;
+    targetIndex: number;
+  }[];
 }
 
 export type SlideLayoutType = "single" | "double" | "triple" | "quad" | "overlay";

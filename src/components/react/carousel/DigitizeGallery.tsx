@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, ArrowLeft, Loader2 } from "lucide-react";
 import { MobileCarousel } from "./MobileCarousel"; 
+import Lightbox from "./Lightbox";
 
 interface AstroInputImage {
   src: string;
@@ -17,44 +17,25 @@ interface DigitizeGalleryProps {
 
 export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGalleryProps) {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
-  const [isFocusedImageLoaded, setIsFocusedImageLoaded] = useState(false);
-  
-  // FIX 1: Add Ref to track the specific DOM element of the zoomed image
-  const focusedImgRef = useRef<HTMLImageElement>(null);
 
   const focusableImages = gridImages.map((img, i) => ({
     src: img.src,
     alt: `Detail View ${i}`,
-    width: img.width,
-    height: img.height
   }));
 
-  // FIX 2: Reset load state AND check for cached images immediately
-  useEffect(() => {
-    if (focusedIndex !== null) {
-      setIsFocusedImageLoaded(false);
-      // If the browser already has it (cache), force true immediately
-      if (focusedImgRef.current && focusedImgRef.current.complete) {
-        setIsFocusedImageLoaded(true);
-      }
-    }
-  }, [focusedIndex]);
-
-  const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Don't reset loaded here, let the useEffect handle it for consistency
+  const nextImage = (e: any) => {
+    e?.stopPropagation();
     setFocusedIndex((prev) => (prev === focusableImages.length - 1 ? 0 : (prev || 0) + 1));
   };
 
-  const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const prevImage = (e: any) => {
+    e?.stopPropagation();
     setFocusedIndex((prev) => (prev === 0 ? focusableImages.length - 1 : (prev || 0) - 1));
   };
 
   return (
     <>
       <div className="block md:hidden w-full mt-0">
-        {/* Pass mapped images clearly to MobileCarousel */}
         <MobileCarousel images={gridImages.map((img, i) => ({ 
           src: img.src, 
           alt: `Digitize Screenshot ${i}`,
@@ -65,47 +46,21 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
 
       <div className="hidden md:block relative w-full max-w-6xl mx-auto mt-0">
         
-        {/* NAVIGATION ARROWS (Inside Container) */}
-        <AnimatePresence>
-          {focusedIndex !== null && (
-            <>
-              <motion.button
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                onClick={prevImage}
-                className="absolute top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 shadow-md border border-gray-100 text-primary hover:scale-105 transition-all z-50 left-4"
-              >
-                <ChevronLeft size={24} />
-              </motion.button>
-
-              <motion.button
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                onClick={nextImage}
-                className="absolute top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 shadow-md border border-gray-100 text-primary hover:scale-105 transition-all z-50 right-4"
-              >
-                <ChevronRight size={24} />
-              </motion.button>
-            </>
-          )}
-        </AnimatePresence>
-
-        {/* MAIN CONTAINER */}
-        <div className="relative w-full rounded-2xl border border-primary/20 bg-white/50 shadow-custom-lg backdrop-blur-sm overflow-hidden leading-none text-[0px]">
+        {/* MAIN CONTAINER: bg-white ensures no peach background bleed-through */}
+        <div className="relative w-full rounded-2xl border border-primary/20 bg-white shadow-custom-lg overflow-hidden leading-none text-[0px]">
           
-          {/* 1. GRID VIEW (Anchor) - Always in DOM to hold size */}
+          {/* 1. GRID VIEW (The Anchor) */}
           <motion.div
             animate={{ opacity: focusedIndex !== null ? 0 : 1 }}
             transition={{ duration: 0.3 }}
             className="w-full flex flex-col"
           >
             <div className="w-full relative">
-              <FadeInImage 
+              <img 
                 src={headerImage.src} 
                 alt="Dashboard Header" 
-                className="w-full h-auto block"
+                className="w-full h-auto block" 
+                loading="eager"
               />
             </div>
 
@@ -116,10 +71,12 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
                   className="relative group cursor-pointer overflow-hidden"
                   onClick={() => setFocusedIndex(i)} 
                 >
-                  <FadeInImage 
+                  {/* FIX: Using standard img to ensure reliable loading */}
+                  <img 
                     src={img.src} 
                     alt={`Slice ${i}`}
                     className="w-full h-auto block transition-transform duration-300 group-hover:brightness-110"
+                    loading="eager"
                   />
                   <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/50 transition-colors pointer-events-none" />
                 </div>
@@ -127,65 +84,20 @@ export default function DigitizeGallery({ headerImage, gridImages }: DigitizeGal
             </div>
           </motion.div>
 
-          {/* 2. FOCUSED VIEW (Layer) - Absolute on top */}
+          {/* 2. LIGHTBOX (Shared Component) */}
           <AnimatePresence>
             {focusedIndex !== null && (
-              <motion.div
-                key="focused-view"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="absolute inset-0 z-20 flex items-center justify-center bg-white/50 backdrop-blur-sm"
-              >
-                {!isFocusedImageLoaded && (
-                  <div className="absolute inset-0 flex items-center justify-center z-30">
-                    <Loader2 className="animate-spin text-primary w-8 h-8" />
-                  </div>
-                )}
-
-                <motion.img
-                  key={focusedIndex}
-                  ref={focusedImgRef} // FIX: Attached ref here
-                  src={focusableImages[focusedIndex].src}
-                  className={`w-full h-full object-contain block transition-opacity duration-300 ${isFocusedImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  onLoad={() => setIsFocusedImageLoaded(true)}
-                />
-
-                <button 
-                  onClick={() => setFocusedIndex(null)}
-                  className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-white/90 hover:bg-white border border-border shadow-sm text-sm text-foreground rounded-full font-medium transition-all z-40"
-                >
-                  <ArrowLeft size={14} className="text-primary" /> Back
-                </button>
-              </motion.div>
+              <Lightbox 
+                image={focusableImages[focusedIndex]}
+                onNext={nextImage}
+                onPrev={prevImage}
+                onClose={() => setFocusedIndex(null)}
+              />
             )}
           </AnimatePresence>
 
         </div>
       </div>
     </>
-  );
-}
-
-function FadeInImage({ src, alt, className }: { src: string, alt: string, className?: string }) {
-  const [loaded, setLoaded] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    if (imgRef.current && imgRef.current.complete) {
-      setLoaded(true);
-    }
-  }, []);
-  
-  return (
-    <img 
-      ref={imgRef}
-      src={src} 
-      alt={alt} 
-      loading="eager"
-      onLoad={() => setLoaded(true)}
-      className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-    />
   );
 }

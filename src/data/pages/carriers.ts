@@ -1,23 +1,53 @@
 import { defaultContent } from "./digitize";
 import type { PageContent } from "@/data/types";
 
-// Specific Asset
+// Base & Mobile
 import carPortal from "@/assets/solutionsscreenshots/carriers/portal2.webp";
+import mobPortal1 from "@/assets/solutionsscreenshots/carriers/mobileportal1.webp";
+import mobPortal2 from "@/assets/solutionsscreenshots/carriers/mobileportal2.webp";
+
+// Gallery Details
+import gal1 from "@/assets/solutionsscreenshots/carriers/carriergallery1.webp";
+import gal2 from "@/assets/solutionsscreenshots/carriers/carriergallery2.webp";
+import gal3 from "@/assets/solutionsscreenshots/carriers/carriergallery3.webp";
+import gal4 from "@/assets/solutionsscreenshots/carriers/carriergallery4.webp";
+import gal5 from "@/assets/solutionsscreenshots/carriers/carriergallery5.webp";
+
+// Placeholder for Dashboard
 import dashboardPreview from "@/assets/dashboard-preview.webp";
 
 export const carriersContent: PageContent = {
   ...defaultContent,
-  digitizeGallery: undefined, // Break inheritance
+  digitizeGallery: undefined,
   carriersGallery: {
-    staticImage: carPortal
+    masterImage: carPortal,
+    mobileImages: [mobPortal1, mobPortal2],
+    galleryImages: [gal1, gal2, gal3, gal4, gal5],
+    hotspots: [
+      { // HOTSPOT 1 (Top Left Main)
+        left: "0.68%", top: "7.05%", width: "57.28%", height: "35.35%", targetIndex: 0 
+      },
+      { // HOTSPOT 2 (Bottom Left Main)
+        left: "0.68%", top: "43.40%", width: "57.28%", height: "22.37%", targetIndex: 1 
+      },
+      { // HOTSPOT 3 (Top Right Strip)
+        left: "58.43%", top: "7.05%", width: "40.78%", height: "18.79%", targetIndex: 2 
+      },
+      { // HOTSPOT 4 (Middle Right Strip)
+        left: "58.43%", top: "26.85%", width: "40.78%", height: "24.27%", targetIndex: 3 
+      },
+      { // HOTSPOT 5 (Bottom Right Strip)
+        left: "58.43%", top: "70.02%", width: "40.78%", height: "29.98%", targetIndex: 4 
+      },
+    ]
   },
   hero: {
     ...defaultContent.hero,
     headline: "MAKE IT EFFORTLESS FOR YOUR CARRIERS AND CUSTOMERS TO BOOK APPOINTMENTS",
     desktopImage: carPortal,
     mobileGallery: [
-      { src: carPortal, alt: "Carrier Portal", style: 'centered' },
-      { src: carPortal, alt: "Carrier Portal", style: 'centered' }
+      { src: mobPortal1, alt: "Carrier Mobile View 1", style: 'centered' },
+      { src: mobPortal2, alt: "Carrier Mobile View 2", style: 'centered' }
     ]
   },
   howItWorks: {
